@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mern-auth
+  namespace: assessment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mern-auth
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: mern-auth
+    spec:
+      imagePullSecrets:
+        - name: ecr-registry
+      containers:
+        - name: mern-auth
+          image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/mern-auth:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9191
+          env:
+            - name: PORT
+              value: "9191"
+            - name: NODE_ENV
+              value: production
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGODB_URI
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: JWT_SECRET
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9191
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9191
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
