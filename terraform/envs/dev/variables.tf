@@ -1,12 +1,12 @@
 variable "aws_region" {
   type        = string
-  default     = "us-east-1"
+  default     = "ap-south-1"
   description = "AWS region."
 }
 
 variable "availability_zone" {
   type        = string
-  default     = "us-east-1a"
+  default     = "ap-south-1a"
   description = "Availability zone."
 }
 
@@ -30,5 +30,6 @@ variable "key_name" {
 
 variable "allowed_ssh_cidr" {
   type        = string
+  default     = "0.0.0.0/0"
   description = "Your public IP CIDR, for example 1.2.3.4/32."
 }
